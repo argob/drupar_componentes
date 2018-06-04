@@ -1,0 +1,1 @@
+<span id="area_estructura"></span>
