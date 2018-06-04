@@ -66,7 +66,7 @@ function drupar_componentes_texto_edit_form_submit($form, &$form_state) {
 function drupar_componentes_texto_render($subtype, $conf, $panel_args, $context = NULL){
   $block = new stdClass();
   $block->title = '';
-  $texto = $conf['sobreescribir'] ? $conf['texto'] : (arg(0) == 'node' && is_numeric(arg(1)) ? field_get_items('node', node_load(arg(1)), 'body', NULL) : '');
+  $texto = $conf['sobreescribir'] ? $conf['texto'] : (esNodo() ? field_get_items('node', node_load(arg(1)), 'body', NULL) : '');
   $texto = $conf['sobreescribir'] ? $texto['value'] : ($conf['cuerpo_o_resumen'] == 'body' ? $texto[0]['safe_value'] : resumen($texto));
 
   $texto = $conf['texto']['format'] == 'full_html' ? $texto : check_markup($texto,$conf['texto']['format']);

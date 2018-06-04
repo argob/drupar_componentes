@@ -233,17 +233,14 @@ function drupar_componentes_listado_edit_form($form, &$form_state) {
 /**
 * The submit form stores the data in $conf.
 */
-function drupar_componentes_listado_edit_form_submit($form, &$form_state) 
-{
+function drupar_componentes_listado_edit_form_submit($form, &$form_state) {
   foreach (array_keys($form_state['plugin']['defaults']) as $key) {
     if (isset($form_state['values'][$key])) {
       $form_state['conf'][$key] = $form_state['values'][$key];
     }
   }
 }
-
-function drupar_componentes_listado_render($subtype, $conf, $panel_args, $context = NULL)
-{
+function drupar_componentes_listado_render($subtype, $conf, $panel_args, $context = NULL){
   $tipoNoticia = !empty($conf['tipo_noticia']) ? reset($conf['tipo_noticia']) : array();
   $tipoTramite = !empty($conf['tipo_tramite']) ? reset($conf['tipo_tramite']) : array();
   $block = new stdClass();
@@ -263,46 +260,33 @@ function drupar_componentes_listado_render($subtype, $conf, $panel_args, $contex
   return $block;
 }
 
-function obtenerLinks($conf)
-{
-  $links = array();
-  if($conf['tipo_de_listado'] == 'custom')
-  {
+function obtenerLinks($conf){
+  if($conf['tipo_de_listado'] == 'custom'){
     foreach ($conf['contenido_custom'] as $key => $item) {
       $links[] = crearLink(node_load($key), $conf["formato_de_listado"] . '_' . $conf["orientacion_de_listado"], $conf);
     }
-  } 
-  else 
-  {
-    if(is_object($conf) && property_exists($conf, 'entity_types'))
-    {
-      if($conf['entity_types'] == 'taxonomy_vocabularies')
-      {
-        $terms = taxonomy_get_tree($conf['taxonomy_vocabularies'], $parent = 0, $max_depth = NULL, $load_entities = FALSE);
-        for ($i=0; $i < $conf['cantidad_links']; $i++) 
-        {
-          $links[] = crearTaxonomyLink($terms[$i], $conf["formato_de_listado"] . '_' . $conf["orientacion_de_listado"], $conf);
-        }
-      } 
-      else 
-      {
-        $view = views_get_view('listado_de_contenido');
-        $view->set_display('listado_de_contenido_default');
-        $view->set_arguments(
-          array(
-            $conf['tipos_de_contenido'],
-            !(empty($conf['tipo_noticia'])) ? $tipoNoticia['entity_id'] : 'all',
-            !(empty($conf['tipo_tramite'])) ? $tipoTramite['entity_id'] : 'all',
-            $conf['tipo_de_listado'] == 'relacionados' && (esNoticia3() || esTramite3()) ? arg(1) : 'all',
-            $conf['tipo_de_listado'] == 'relacionados' && (esArea3() || esPaginaRelacionadaDeNodo3()) ? arg(1) : 'all'
-          )
-        );
-        $view->set_items_per_page($conf["cantidad_links"]);
-        $view->execute();
-        foreach ($view->result as $key => $item) 
-        {
-          $links[] = crearLink($item->_field_data["nid"]["entity"], $conf["formato_de_listado"] . '_' . $conf["orientacion_de_listado"], $conf);
-        }
+  } else {
+    if($conf['entity_types'] == 'taxonomy_vocabularies'){
+      $terms = taxonomy_get_tree($conf['taxonomy_vocabularies'], $parent = 0, $max_depth = NULL, $load_entities = FALSE);
+      for ($i=0; $i < $conf['cantidad_links']; $i++) {
+        $links[] = crearTaxonomyLink($terms[$i], $conf["formato_de_listado"] . '_' . $conf["orientacion_de_listado"], $conf);
+      }
+    } else {
+      $view = views_get_view('listado_de_contenido');
+      $view->set_display('listado_de_contenido_default');
+      $view->set_arguments(
+        array(
+          $conf['tipos_de_contenido'],
+          !(empty($conf['tipo_noticia'])) ? $tipoNoticia['entity_id'] : 'all',
+          !(empty($conf['tipo_tramite'])) ? $tipoTramite['entity_id'] : 'all',
+          $conf['tipo_de_listado'] == 'relacionados' && (esNoticia() || esTramite()) ? arg(1) : 'all',
+          $conf['tipo_de_listado'] == 'relacionados' && (esArea() || esPaginaRelacionadaDeNodo()) ? arg(1) : 'all'
+        )
+      );
+      $view->set_items_per_page($conf["cantidad_links"]);
+      $view->execute();
+      foreach ($view->result as $key => $item) {
+        $links[] = crearLink($item->_field_data["nid"]["entity"], $conf["formato_de_listado"] . '_' . $conf["orientacion_de_listado"], $conf);
       }
     }
   }
@@ -344,7 +328,7 @@ function plural($texto){
 }
 
 function esRelacionadosDeArea($conf){
-  return (esArea3() && $conf['tipo_de_listado'] == 'relacionados');
+  return (esArea() && $conf['tipo_de_listado'] == 'relacionados');
 }
 
 function crearTaxonomyLink($item, $theme, $conf = NULL){
@@ -426,30 +410,4 @@ function obtenerTaxonomyVocabularies(){
     $vocabularies[$value->vid] = $value->name;
   }
   return $vocabularies;
-}
-
-
-function esNodo3()
-{
-    return arg(0) == 'node' && is_numeric(arg(1));
-}
-function esArea3()
-{
-    return (esNodo3() && es3('area', node_load(arg(1))));
-}
-function esTramite3()
-{
-    return (esNodo3() && es3('tramite', node_load(arg(1))));
-}
-function esNoticia3()
-{
-    return (esNodo3() && es3('noticia', node_load(arg(1))));
-}
-function es3($tipo, $nodo)
-{
-    return ($nodo->type == $tipo);
-}
-function esPaginaRelacionadaDeNodo3()
-{
-    return arg(0) == 'node' && is_numeric(arg(1)) && arg(2) != '';
 }

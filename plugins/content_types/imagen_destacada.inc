@@ -30,7 +30,7 @@ function drupar_componentes_imagen_destacada_render($subtype, $conf, $panel_args
     $node = node_load(arg(1));
       $imagen = field_get_items('node', $node, 'field_featured_image', NULL);
       $texto = field_get_items('node', $node, 'body', NULL);
-      $theme =   arg(0) == 'node' && is_numeric(arg(1)) && node_load(arg(1))->type == 'noticia' ? 'drupar_componentes_imagen_destacada_noticia' : 'drupar_componentes_imagen_destacada';
+      $theme = esNoticia() ? 'drupar_componentes_imagen_destacada_noticia' : 'drupar_componentes_imagen_destacada';
       $block->content = theme(
         'drupar_componentes_imagen_destacada_' . $node->type, 
         array(

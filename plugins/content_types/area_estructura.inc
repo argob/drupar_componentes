@@ -24,7 +24,7 @@ function drupar_componentes_area_estructura_admin_info($subtype, $conf, $context
 function drupar_componentes_area_estructura_render($subtype, $conf, $panel_args, $context = NULL){
   $block = new stdClass();
   $block->title = '';
-  if(arg(0) == 'node' && is_numeric(arg(1)) && esTipo('area', node_load(arg(1)))) {
+  if(esArea()) {
     $node = node_load(arg(1));
     $autoridad = new stdClass;
     $autoridad->nombre = field_get_items('node', $node, 'field_autoridad_nombre', NULL);
@@ -111,8 +111,4 @@ function obtenerSubareas($subareas){
       );
     }
   return $items;
-}
-function esTipo($tipo, $nodo)
-{
-    return ($nodo->type == $tipo);
 }

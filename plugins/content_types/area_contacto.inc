@@ -24,7 +24,7 @@ function drupar_componentes_area_contacto_admin_info($subtype, $conf, $contexts)
 function drupar_componentes_area_contacto_render($subtype, $conf, $panel_args, $context = NULL){
   $block = new stdClass();
   $block->title = '';
-  if(arg(0) == 'node' && is_numeric(arg(1)) && node_load(arg(1))->type == 'area'){
+  if(esArea()) {
     $node = node_load(arg(1));
     $contacto = new stdClass;
     $contacto->direccion = field_get_items('node', $node, 'field_direccion', NULL);
